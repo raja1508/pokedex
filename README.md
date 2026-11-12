@@ -1,4 +1,4 @@
-# Pokédex Demo App
+# Pokédex App
 
 A small React Native (Expo) app built to **learn by example**. It shows how to call a real API, move between screens with file-based routing, and manage state, using the free [PokéAPI](https://pokeapi.co/).
 
@@ -6,6 +6,10 @@ A small React Native (Expo) app built to **learn by example**. It shows how to c
 
 ▶️ [Watch the demo video](https://raw.githubusercontent.com/raja1508/pokedex/main/assets/demo.webm)
 > The video is a local file. Put your recording at `assets/demo.mp4`, or change the path above to wherever you saved it.
+
+
+https://github.com/user-attachments/assets/85a3baca-07b0-40e3-b88d-0f1ae7eef7fb
+
 
 ## What this project teaches
 
