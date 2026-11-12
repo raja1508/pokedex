@@ -4,8 +4,7 @@ A small React Native (Expo) app built to **learn by example**. It shows how to c
 
 ## Demo
 
-▶️ [Watch the demo video](./assets/demo.webm)
-
+▶️ [Watch the demo video](https://raw.githubusercontent.com/raja1508/pokedex/main/assets/demo.webm)
 > The video is a local file. Put your recording at `assets/demo.mp4`, or change the path above to wherever you saved it.
 
 ## What this project teaches
