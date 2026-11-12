@@ -1,98 +1,184 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useEffect, useMemo, useState } from "react";
+import {
+  Text,
+  View,
+  StyleSheet,
+  FlatList,
+  StatusBar,
+  TextInput,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import {
+  colors,
+  spacing,
+  radius,
+  sizes,
+  globalStyles,
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
+} from "../theme";
+
+import { PokemonRow } from "@/components/PokemonRow";
+
+type Pokemon = {
+  name: string;
+  url: string;
+};
+
+type PokemonList = Pokemon[];
+
+
+
+export default function Index() {
+  // const [pokemons, setPokemons] = useState<PokemonList>([]);
+  const [all, setAll] = useState<PokemonList>([]); 
+  const [query, setQuery] = useState(""); 
+
+  function searchPokemon(query: string): PokemonList{
+    const q = query.trim().toLowerCase();
+    console.log(q)
+    if (!q) return all;
+
+    const startsWith = all.filter((p) => p.name.startsWith(q));
+    const contains = all.filter((p) => !p.name.startsWith(q) && p.name.includes(q));
+    let searchedPokemons =  [...startsWith, ...contains]; // best matches first
+    return searchedPokemons; 
   }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
+
+  
+  useEffect(() => {
+    // fetch pokemons
+    fetchPokemons();
+  }, []);
+  
+  const pokemons: PokemonList = useMemo(() => {
+    return searchPokemon(query)
+  }, [query]); 
+
+  async function fetchPokemons() {
+    try {
+      const response = await fetch(
+        "https://pokeapi.co/api/v2/pokemon/?limit=20"
+      );
+
+      const data = await response.json();
+      setAll(data.results);
+      // console.log(data.results)
+    } catch (error) {
+      console.log("pokemon api crashed");
+    }
   }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+
+  let pokemonsData = pokemons.length == 0 ? all: pokemons;  
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+    <SafeAreaView style={globalStyles.screen}>
+      <StatusBar barStyle="dark-content" />
+      <FlatList
+        data={pokemonsData}
+        keyExtractor={(item) => item.name}
+        renderItem={({ item }) => <PokemonRow item={item} />}
+        numColumns={2}
+        columnWrapperStyle={styles.columnWrapper}
+        ListHeaderComponent={
+          <View style={styles.header}>
+            <View style={globalStyles.rowBetween}>
+              {/* <Ionicons name="arrow-back" size={24} color={colors.textPrimary} /> */}
+              <View style={{flex: 1, alignItems: "center"}}>
+              <Text style={[globalStyles.screenTitle]}>Pokedex</Text>
+              </View>
+              <View style={styles.listButton}>
+                <Ionicons name="list" size={20} color={colors.textPrimary} />
+              </View>
+            </View>
 
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+            <View style={styles.searchBar}>
+              <Ionicons name="search" size={18} color={colors.textMuted} />
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Search Pokémon"
+                placeholderTextColor={colors.textMuted}
+                value={query}
+                onChangeText={setQuery}
+              />
+            </View>
+          </View>
+        }
+        contentContainerStyle={styles.list}
+        ItemSeparatorComponent={() => <View style={globalStyles.gapMd} />}
+      />
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
 
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+
+      {/* <View style={[globalStyles.fab, styles.fab]}>
+        <Ionicons name="options-outline" size={20} color={colors.textOnColor} />
+      </View> */}
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+  list: {
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.lg,
+    paddingBottom: 96, // room for the floating button
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+  columnWrapper: {
+    gap: spacing.md,
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+  header: {
+    marginBottom: spacing.xl,
   },
   title: {
-    textAlign: 'center',
+    marginTop: spacing.lg,
+    marginBottom: spacing.lg,
   },
-  code: {
-    textTransform: 'uppercase',
+  listButton: {
+    width: sizes.iconButton,
+    height: sizes.iconButton,
+    borderRadius: radius.card,
+    backgroundColor: colors.surfaceMuted,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    height: sizes.iconButton,
+    paddingHorizontal: spacing.lg,
+    borderRadius: radius.card,
+    backgroundColor: colors.surfaceMuted,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.textPrimary,
+    padding: 0,
+  },
+  chip: {
+    marginTop: spacing.xs,
+  },
+  pokeball: {
+    position: "absolute",
+    right: -14,
+    bottom: -14,
+    width: 76,
+    height: 76,
+    borderRadius: 38,
+    backgroundColor: "rgba(255, 255, 255, 0.18)",
+  },
+  sprite: {
+    position: "absolute",
+    right: spacing.sm,
+    bottom: spacing.sm,
+    width: sizes.sprite,
+    height: sizes.sprite,
+  },
+  fab: {
+    position: "absolute",
+    right: spacing.xl,
+    bottom: spacing.xl,
   },
 });
