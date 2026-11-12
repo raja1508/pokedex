@@ -5,6 +5,7 @@ A small React Native (Expo) app built to **learn by example**. It shows how to c
 ## Demo
 
 ▶️ [Watch the demo video]
+
 https://github.com/user-attachments/assets/85a3baca-07b0-40e3-b88d-0f1ae7eef7fb
 
 
