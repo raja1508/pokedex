@@ -1,23 +1,22 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useMemo, useState } from "react";
 import {
-  Text,
-  View,
-  StyleSheet,
   FlatList,
   StatusBar,
+  StyleSheet,
+  Text,
   TextInput,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
 
 import {
   colors,
-  spacing,
+  globalStyles,
   radius,
   sizes,
-  globalStyles,
-
-} from "../theme";
+  spacing,
+} from "../constants/theme";
 
 import { PokemonRow } from "@/components/PokemonRow";
 
@@ -28,38 +27,37 @@ type Pokemon = {
 
 type PokemonList = Pokemon[];
 
-
-
 export default function Index() {
   // const [pokemons, setPokemons] = useState<PokemonList>([]);
-  const [all, setAll] = useState<PokemonList>([]); 
-  const [query, setQuery] = useState(""); 
+  const [all, setAll] = useState<PokemonList>([]);
+  const [query, setQuery] = useState("");
 
-  function searchPokemon(query: string): PokemonList{
+  function searchPokemon(query: string): PokemonList {
     const q = query.trim().toLowerCase();
-    console.log(q)
+    console.log(q);
     if (!q) return all;
 
     const startsWith = all.filter((p) => p.name.startsWith(q));
-    const contains = all.filter((p) => !p.name.startsWith(q) && p.name.includes(q));
-    let searchedPokemons =  [...startsWith, ...contains]; // best matches first
-    return searchedPokemons; 
+    const contains = all.filter(
+      (p) => !p.name.startsWith(q) && p.name.includes(q),
+    );
+    let searchedPokemons = [...startsWith, ...contains]; // best matches first
+    return searchedPokemons;
   }
 
-  
   useEffect(() => {
     // fetch pokemons
     fetchPokemons();
   }, []);
-  
+
   const pokemons: PokemonList = useMemo(() => {
-    return searchPokemon(query)
-  }, [query]); 
+    return searchPokemon(query);
+  }, [query]);
 
   async function fetchPokemons() {
     try {
       const response = await fetch(
-        "https://pokeapi.co/api/v2/pokemon/?limit=20"
+        "https://pokeapi.co/api/v2/pokemon/?limit=200",
       );
 
       const data = await response.json();
@@ -70,7 +68,7 @@ export default function Index() {
     }
   }
 
-  let pokemonsData = pokemons.length == 0 ? all: pokemons;  
+  let pokemonsData = pokemons.length == 0 ? all : pokemons;
   return (
     <SafeAreaView style={globalStyles.screen}>
       <StatusBar barStyle="dark-content" />
@@ -84,14 +82,13 @@ export default function Index() {
           <View style={styles.header}>
             <View style={globalStyles.rowBetween}>
               {/* <Ionicons name="arrow-back" size={24} color={colors.textPrimary} /> */}
-              <View style={{flex: 1, alignItems: "center"}}>
-              <Text style={[globalStyles.screenTitle]}>Pokedex</Text>
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <Text style={[globalStyles.screenTitle]}>Pokedex</Text>
               </View>
               <View style={styles.listButton}>
                 <Ionicons name="list" size={20} color={colors.textPrimary} />
               </View>
             </View>
-
 
             <View style={styles.searchBar}>
               <Ionicons name="search" size={18} color={colors.textMuted} />
@@ -108,8 +105,6 @@ export default function Index() {
         contentContainerStyle={styles.list}
         ItemSeparatorComponent={() => <View style={globalStyles.gapMd} />}
       />
-
-
 
       {/* <View style={[globalStyles.fab, styles.fab]}>
         <Ionicons name="options-outline" size={20} color={colors.textOnColor} />

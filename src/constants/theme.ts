@@ -73,8 +73,8 @@ export const radius = {
 export const sizes = {
   fab: 48,
   iconButton: 44,
-  sprite: 72,
-  heroImage: 220,
+  sprite: 80,
+  heroImage: 280,
   statBarHeight: 3,
 } satisfies Record<string, number>;
 

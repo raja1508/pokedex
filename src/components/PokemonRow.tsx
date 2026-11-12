@@ -1,7 +1,8 @@
+import { Href, router } from "expo-router";
 import { useEffect, useState } from "react";
-import { Text, View, StyleSheet, Image } from "react-native";
-import { spacing, sizes, globalStyles, getTypeColor } from "../theme";
-import { fetchPokemonDetail, PokemonDetail } from "../pokemon";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { fetchPokemonDetail, PokemonDetail } from "../constants/pokemon";
+import { getTypeColor, globalStyles, sizes, spacing } from "../constants/theme";
 
 export type Pokemon = {
   name: string;
@@ -11,7 +12,8 @@ export type Pokemon = {
 const getId = (url: string) => url.split("/").filter(Boolean).pop() as string;
 const getSprite = (id: string) =>
   `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
-const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
+const capitalize = (text: string) =>
+  text.charAt(0).toUpperCase() + text.slice(1);
 
 export const PokemonRow = ({ item }: { item: Pokemon }) => {
   const id = getId(item.url);
@@ -38,7 +40,10 @@ export const PokemonRow = ({ item }: { item: Pokemon }) => {
   const image = detail?.image ?? getSprite(id);
 
   return (
-    <View style={[globalStyles.pokemonCard, { backgroundColor }]}>
+    <Pressable
+      style={[globalStyles.pokemonCard, { backgroundColor }]}
+      onPress={() => router.replace(`/pokemon/${id}` as Href)}
+    >
       <View style={styles.pokeball} />
       <Text style={globalStyles.cardName}>{capitalize(item.name)}</Text>
       {types.map((type) => (
@@ -47,7 +52,7 @@ export const PokemonRow = ({ item }: { item: Pokemon }) => {
         </View>
       ))}
       <Image source={{ uri: image }} style={styles.sprite} />
-    </View>
+    </Pressable>
   );
 };
 
@@ -70,6 +75,5 @@ const styles = StyleSheet.create({
     bottom: spacing.sm,
     width: sizes.sprite,
     height: sizes.sprite,
-    
   },
 });

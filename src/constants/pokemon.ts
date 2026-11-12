@@ -80,7 +80,7 @@ export function toPokemonDetail(raw: PokemonApiResponse): PokemonDetail {
     STAT_NAMES.map((name) => [
       name,
       raw.stats?.find((s) => s.stat.name === name)?.base_stat ?? 0,
-    ])
+    ]),
   ) as Record<PokemonStatName, number>;
 
   const totalStats = STAT_NAMES.reduce((sum, name) => sum + stats[name], 0);
@@ -109,7 +109,8 @@ export function toPokemonDetail(raw: PokemonApiResponse): PokemonDetail {
     image,
     moves: (raw.moves ?? []).map((m) => m.move.name),
     speciesUrl:
-      raw.species?.url ?? `https://pokeapi.co/api/v2/pokemon-species/${raw.id}/`,
+      raw.species?.url ??
+      `https://pokeapi.co/api/v2/pokemon-species/${raw.id}/`,
   };
 }
 
@@ -118,13 +119,14 @@ export function toPokemonDetail(raw: PokemonApiResponse): PokemonDetail {
 /* -------------------------------------------------------------------------- */
 
 export async function fetchPokemonDetail(
-  idOrName: string | number
+  idOrName: string | number,
 ): Promise<PokemonDetail> {
   const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${idOrName}`);
   if (!response.ok) {
-    throw new Error(`Could not load Pokémon "${idOrName}" (${response.status})`);
+    throw new Error(
+      `Could not load Pokémon "${idOrName}" (${response.status})`,
+    );
   }
   const raw: PokemonApiResponse = await response.json();
   return toPokemonDetail(raw);
 }
-

@@ -1,0 +1,10 @@
+export { AboutTab } from "./Abouttab";
+export { DetailHeader } from "./DetailHeader";
+export { EvolutionTab } from "./Evolutiontab";
+export { MovesTab } from "./Movestab";
+export { ScreenState } from "./Screenstate";
+export { StatsTab } from "./Statstab";
+export { TabBar } from "./Tabbar";
+export type { Tab } from "@/constants/types";
+export { usePokemonDetail } from "@/constants/usepokemondetails";
+export { HERO_OVERLAP } from "@/constants/utils";
